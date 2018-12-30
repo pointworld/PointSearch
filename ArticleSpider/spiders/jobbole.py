@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+from datetime import datetime
 from urllib import parse
 
 import scrapy
@@ -79,6 +80,10 @@ class JobboleSpider(scrapy.Spider):
         article_item['fav_nums'] = fav_nums
         article_item['praise_nums'] = praise_nums
         article_item['comment_nums'] = comment_nums
+        try:
+            create_date = datetime.strftime(create_date, '%Y/%m/%d')
+        except Exception as e:
+            create_date = datetime.now().date()
         article_item['create_date'] = create_date
 
         yield article_item
