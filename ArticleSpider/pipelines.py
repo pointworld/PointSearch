@@ -93,10 +93,15 @@ class MysqlTwistedPipeline(object):
     def do_insert(self, cursor, item):
         # 执行具体的插入
         insert_sql = """
-            insert into  jobbole_article(url_object_id, title, url, create_date, fav_nums) VALUES (%s, %s, %s, %s, %s)
+            insert into  jobbole_article(
+                url_object_id, title, content, tags, url, cover_url, fav_nums, 
+                praise_nums, comment_nums, create_date
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(insert_sql,
-                       (item['url_object_id'], item['title'], item['url'], item['create_date'], item['fav_nums']))
+        cursor.execute(insert_sql, (
+            item['url_object_id'], item['title'], item['content'], item['tags'], item['url'], item['cover_url'],
+            item['fav_nums'], item['praise_nums'], item['comment_nums'], item['create_date']
+        ))
 
 
 class JsonExporterPipeline(object):
@@ -120,6 +125,7 @@ class JsonExporterPipeline(object):
 
 class ArticleImagePipeline(ImagesPipeline):
     def item_completed(self, results, item, info):
-        for ok, value in results:
-            item['cover_path'] = value['path']
+        if 'cover_url' in item:
+            for ok, value in results:
+                item['cover_path'] = value['path']
         return item
