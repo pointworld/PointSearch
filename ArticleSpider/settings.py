@@ -72,7 +72,8 @@ ITEM_PIPELINES = {
    # 'ArticleSpider.pipelines.JsonExporterPipeline': 2,
    # 'scrapy.pipelines.images.ImagesPipeline': 1,
    # 'ArticleSpider.pipelines.ArticleImagePipeline': 1,
-   'ArticleSpider.pipelines.MysqlPipeline': 1,
+   # 'ArticleSpider.pipelines.MysqlPipeline': 1,
+   'ArticleSpider.pipelines.MysqlTwistedPipeline': 1,
 }
 
 IMAGES_URLS_FIELD = 'cover_url'
@@ -102,3 +103,10 @@ IMAGES_STORE = os.path.join(PROJECT_DIR, 'images')
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+
+# MySQL 相关设置
+MYSQL_HOST = '192.168.1.128'
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = 'pointworld'
+MYSQL_DBNAME = 'article_spider'
