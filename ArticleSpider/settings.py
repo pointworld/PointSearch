@@ -69,9 +69,10 @@ ROBOTSTXT_OBEY = False
 ITEM_PIPELINES = {
    # 'ArticleSpider.pipelines.ArticlespiderPipeline': 300,
    # 'ArticleSpider.pipelines.JsonWithEncodingPipeline': 2,
-   'ArticleSpider.pipelines.JsonExporterPipeline': 2,
+   # 'ArticleSpider.pipelines.JsonExporterPipeline': 2,
    # 'scrapy.pipelines.images.ImagesPipeline': 1,
-   'ArticleSpider.pipelines.ArticleImagePipeline': 1,
+   # 'ArticleSpider.pipelines.ArticleImagePipeline': 1,
+   'ArticleSpider.pipelines.MysqlPipeline': 1,
 }
 
 IMAGES_URLS_FIELD = 'cover_url'
