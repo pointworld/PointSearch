@@ -6,6 +6,9 @@ from urllib import parse
 import scrapy
 from scrapy.http import Request
 
+from ..items import JobBoleArticleItem
+from ..utils.common import get_md5
+
 
 class JobboleSpider(scrapy.Spider):
     name = 'jobbole'
@@ -22,9 +25,11 @@ class JobboleSpider(scrapy.Spider):
         """
 
         # 获取列表页中的所有文章 URL，并交给 scrapy 下载和解析
-        post_urls = response.css('#archive .floated-thumb .post-thumb a::attr(href)').extract()
-        for post_url in post_urls:
-            yield Request(url=parse.urljoin(response.url, post_url), callback=self.parse_detail)
+        post_nodes = response.css('#archive .floated-thumb .post-thumb a')
+        for post_node in post_nodes:
+            cover_url = post_node.css('img::attr(src)').extract_first('')
+            post_url = post_node.css('::attr(href)').extract_first('')
+            yield Request(url=parse.urljoin(response.url, post_url), meta={'cover_url': cover_url}, callback=self.parse_detail)
 
         # 提取下一页，并交给 scrapy 进行下载和解析
         next_url = response.css('.next.page-numbers::attr(href)').extract_first('')
@@ -37,7 +42,11 @@ class JobboleSpider(scrapy.Spider):
         :param response:
         :return:
         """
+        article_item = JobBoleArticleItem()
+
         title = response.xpath('//div[@class="entry-header"]/h1/text()').extract_first('')
+        # 文章封面图
+        cover_url = response.meta.get('cover_url', '')
         create_date = response.xpath("//p[@class='entry-meta-hide-on-mobile']/text()").extract_first(
             '').strip().replace("·", "").strip()
         praise_nums = int(response.xpath('//div[@class="post-adds"]/span/h10/text()').extract_first(0))
@@ -60,3 +69,17 @@ class JobboleSpider(scrapy.Spider):
         tag_list = response.xpath("//p[@class='entry-meta-hide-on-mobile']/a/text()").extract()
         tag_list = [element for element in tag_list if not element.strip().endswith("评论")]
         tags = ",".join(tag_list)
+
+        article_item['title'] = title
+        article_item['content'] = content
+        article_item['tags'] = tags
+        article_item['url'] = response.url
+        article_item['url_object_id'] = get_md5(response.url)
+        article_item['cover_url'] = [cover_url]
+        article_item['fav_nums'] = fav_nums
+        article_item['praise_nums'] = praise_nums
+        article_item['comment_nums'] = comment_nums
+        article_item['create_date'] = create_date
+
+        yield article_item
+
